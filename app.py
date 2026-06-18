@@ -3046,6 +3046,12 @@ with st.sidebar:
         st.session_state.menu_secim = "🏠 Ana Sayfa"
         st.rerun()
 
+    # AL-SAT ŞARTLARI
+    al_sat_btn = st.button("📋 Al-Sat Şartları", use_container_width=True, type="secondary")
+    if al_sat_btn:
+        st.session_state.menu_secim = "📋 Al-Sat Şartları"
+        st.rerun()
+
     # Hisse seçici
     st.selectbox(
         "Sembol",
@@ -3446,6 +3452,66 @@ if secim == "🏠 Ana Sayfa":
             st.info("Veri alınamadı.")
 
     st.info("💡 Sol menüden diğer sayfalara geçiş yapabilirsiniz.")
+
+if secim == "📋 Al-Sat Şartları":
+    st.subheader("📋 Al-Sat Şartları — Ajan Onaylı Karar Rehberi")
+    st.markdown("""
+<style>
+    .al-sat-kutu { background:#0F172A; border:1px solid #1e293b; border-radius:12px; padding:18px 22px; margin:10px 0; }
+    .al-sat-kutu h4 { color:#e2e8f0; font-size:16px; font-weight:700; margin:0 0 8px 0; }
+    .al-sat-kutu ul { margin:4px 0; padding-left:20px; }
+    .al-sat-kutu li { font-size:13px; color:#cbd5e1; line-height:1.8; margin:2px 0; }
+    .al-sat-kutu strong { color:#f8fafc; }
+    .yesil-vurgu { color:#4ade80; font-weight:600; }
+    .mavi-vurgu { color:#38bdf8; font-weight:600; }
+    .sari-vurgu { color:#fbbf24; font-weight:600; }
+    .kirmizi-vurgu { color:#ef4444; font-weight:600; }
+    .altin-kural { background:linear-gradient(135deg,rgba(250,204,21,0.06),rgba(245,158,11,0.04)); border:1px solid rgba(250,204,21,0.2); border-left:4px solid #fbbf24; border-radius:12px; padding:18px 22px; margin:16px 0; }
+</style>
+
+<div class="al-sat-kutu" style="border-left:4px solid #4ade80;">
+<h4>🟩 NE ZAMAN "<span class="yesil-vurgu">AL</span>" YAPMALISIN? (Alım Koşulları)</h4>
+<p style="font-size:13px;color:#94a3b8;margin:4px 0 10px 0;">Ajan Konsensüs Panelindeki 3 ana sütunda şu verileri aynı anda (veya en az ikisini güçlü şekilde) gördüğünde alım yönünde pozisyon açabilirsin:</p>
+<ul>
+<li><strong>🟢 Teknik Analiz Ajanında:</strong><br>
+• Hisse fiyatı düşerken RSI veya MACD çizgilerinin yükseldiğini, yani "<span class="yesil-vurgu">Pozitif Uyumsuzluk (Bullish Divergence)</span>" saptandığını görüyorsan <em>(Bu, düşüşün bittiğini ve gizli alıcıların geldiğini gösterir).</em><br>
+• Fiyatın EMA 50 hareketli ortalamasının üzerine yerleştiğini ve hacmin son 20 günlük ortalamanın üzerine çıktığını görüyorsan.</li>
+<li><strong>🔵 Balina & Takas Ajanında:</strong><br>
+• "<span class="mavi-vurgu">İlk 5 Kurumun Toplama Oranı</span>" (Haftalık/Aylık Delta) pozitif ve yükseliyorsa <em>(Tahta yapıcılar ve büyük fonlar mal topluyor demektir).</em><br>
+• Emir Defteri Alış Baskı Katsayısı (Imbalance Ratio) 1.5x ile 2.0x arasında veya daha üzerindeyse <em>(Kademelerde devasa alım blokları yığılmıştır).</em></li>
+<li><strong>🟡 Makro Duygu Ajanında:</strong><br>
+• Son KAP haberlerinin veya finansal medya taramalarının FinBERT tarafından yüksek oranda "<span class="sari-vurgu">Positive</span>" (Pozitif) etiketlendiğini görüyorsan.</li>
+</ul>
+<p style="font-size:13px;color:#e2e8f0;margin:8px 0 0 0;font-weight:600;">💥 Nihai Tetikleyici:</p>
+<p style="font-size:13px;color:#cbd5e1;margin:2px 0 0 0;">Bu 3 verinin ağırlıklı ortalamasıyla hesaplanan "<span class="yesil-vurgu">Ortak Konsensüs Skoru</span>" <strong>85 ve üzerine</strong> çıktığında ve sistem 🚀 <span class="yesil-vurgu">GÜÇLÜ AL (STRONG BUY)</span> sinyali ürettiğinde alım yapılabilir.</p>
+</div>
+
+<div class="al-sat-kutu" style="border-left:4px solid #ef4444;">
+<h4>🟥 NE ZAMAN "<span class="kirmizi-vurgu">SAT</span>" VEYA "<span class="kirmizi-vurgu">UZAK DUR</span>" YAPMALISIN? (Satım Koşulları)</h4>
+<p style="font-size:13px;color:#94a3b8;margin:4px 0 10px 0;">Elindeki hisseyi satıp kâr realize etmek veya riskli bir hisseye hiç bulaşmamak için şu sinyalleri takip etmelisin:</p>
+<ul>
+<li><strong>🟢 Teknik Analiz Ajanında:</strong><br>
+• Fiyat yeni zirveler yaparken RSI indikatörünün daha düşük tepeler yaptığını, yani "<span class="kirmizi-vurgu">Negatif Uyumsuzluk (Bearish Divergence)</span>" oluştuğunu görüyorsan <em>(Bu, yükselişin sahte olduğunu ve gücünün bittiğini söyler).</em><br>
+• RSI değerinin 70 veya 80 üzerine (Aşırı Alım bölgesi) tırmandığını ve fiyatın Bollinger Üst Bandının dışına taştığını görüyorsan.</li>
+<li><strong>🔵 Balina & Takas Ajanında:</strong><br>
+• Fiyat yükselmesine rağmen "<span class="mavi-vurgu">İlk 5 Kurum</span>" mal satıyor ve lotlar diğer küçük yatırımcılara dağıtılıyorsa ("<span class="kirmizi-vurgu">Kurumsal Dağıtım / Mal Çakma</span>" evresi).<br>
+• Emir defterinde satış kademelerine gizli veya devasa blok satış emirleri yerleştirilmişse.</li>
+<li><strong>🟡 Makro Duygu Ajanında:</strong><br>
+• Şirket hakkında negatif haber akışının başlaması, sosyal medyadaki panik/korku endeksinin aniden fırlaması.</li>
+</ul>
+<p style="font-size:13px;color:#e2e8f0;margin:8px 0 0 0;font-weight:600;">💥 Nihai Tetikleyici:</p>
+<p style="font-size:13px;color:#cbd5e1;margin:2px 0 0 0;"><span class="kirmizi-vurgu">Ortak Konsensüs Skoru 50'nin altına</span> gerilediğinde veya sistem ⚠️ <span class="kirmizi-vurgu">RİSKLİ BÖLGE / UZAK DUR (AVOID)</span> uyarısı verdiğinde eldeki varlıklar satılmalı veya yeni alım yapılmamalıdır.</p>
+</div>
+
+<div class="altin-kural">
+<h4 style="color:#fbbf24;font-size:16px;font-weight:700;margin:0 0 8px 0;">🎯 Yatırım Yaparken Asla Unutmaman Gereken Altın Kural (Kasa Yönetimi)</h4>
+<p style="font-size:13px;color:#cbd5e1;margin:4px 0;line-height:1.7;">Ajanların ne kadar kusursuz çalışırsa çalışsın, piyasada her zaman beklenmedik bir jeopolitik risk veya küresel kriz (<strong>Siyah Kuğu</strong>) çıkabilir. Bu yüzden yatırımlarını şu iki koruma filtresine göre yapmalısın:</p>
+<ul>
+<li><strong>Vade Filtresi:</strong> Eğer sol menüden "<span class="sari-vurgu">Kısa Vade</span>" seçtiysen, Duygu ajanını tamamen göz ardı et; sadece Teknik Uyumsuzluk + Emir Defteri Alış Baskısına bakarak hareket et. Eğer "<span class="sari-vurgu">Uzun Vade</span>" seçtiysen, indikatörleri boş ver; tamamen Balinaların takas toplama istikrarına ve temel büyüme verilerine odaklan.</li>
+<li><strong>%10 Sınırı (Risk Yönetimi):</strong> Analiz sonucu %100 kusursuz görünse bile, cüzdanındaki toplam paranın (kasanın) en fazla <strong>%10'u</strong> ile tek bir hisseye giriş yap. Paranı en az 4-5 farklı ajan onaylı varlığa bölerek riskini minimize et.</li>
+</ul>
+</div>
+""", unsafe_allow_html=True)
 
 if secim == "🤖 AI Karar Motoru":
     # ——— AJAN KONSENSÜS DASHBOARD (sayfanın üstünde) ———
