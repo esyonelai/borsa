@@ -16,198 +16,102 @@ from scipy.optimize import minimize
 import plotly.express as px
 from streamlit_extras.metric_cards import style_metric_cards
 
-# --- 1. PAGE CONFIG & STYLING ---
-st.set_page_config(page_title="Global Makro & BIST Terminali", layout="wide", initial_sidebar_state="expanded")
+# ============================================================
+# CSS INJECTION: Full-screen hedge fund terminal — Zero Padding / Dark Navy Slate
+# ============================================================
 
-# Modern Dynamic UI CSS Injection
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+    /* === ANA SAYFA: TÜM BOŞLUKLARI SIFIRLA === */
+    .main > div:first-child { padding-top: 0px !important; }
+    .block-container { padding-top: 0px !important; padding-bottom: 0px !important; max-width: 100% !important; }
+    header[data-testid="stHeader"] { display: none !important; }
+    #MainMenu { visibility: hidden !important; }
+    footer { display: none !important; }
+    div[data-testid="stVerticalBlock"] { gap: 0px !important; }
 
-    /* === ÜST BOŞLUK TAMAMEN SIFIR === */
-    .main > div:first-child { padding-top: 0rem !important; margin-top: 0rem !important; }
-    .main > div:first-child > div { padding-top: 0rem !important; margin-top: 0rem !important; }
-    .block-container { padding-top: 0rem !important; padding-bottom: 0rem !important; margin-top: 0rem !important; max-width: 100% !important; }
-    header[data-testid="stHeader"] { background: transparent !important; display: none !important; }
-    #stDecoration { display: none !important; }
-    section[data-testid="stSidebar"] + div section:first-child > div:first-child { padding-top: 0 !important; margin-top: 0 !important; }
-    div[data-testid="stVerticalBlock"] > div:first-child { padding-top: 0 !important; }
-    .element-container:first-child { margin-top: 0 !important; }
-    .stApp > div:first-child > div:first-child { padding-top: 0 !important; }
+    /* === SIDEBAR: TEPEDEN SIFIR, DARK NAVY === */
+    section[data-testid="stSidebar"] > div:first-child { padding-top: 0px !important; }
+    section[data-testid="stSidebar"] .st-emotion-cache-1wmy9hl { padding-top: 0px !important; }
+    section[data-testid="stSidebar"] { background-color: #0F172A !important; }
+    section[data-testid="stSidebar"] .st-emotion-cache-1wivap2,
+    section[data-testid="stSidebar"] .st-emotion-cache-1gulkj5 { background-color: #0F172A !important; }
+    section[data-testid="stSidebar"] hr { margin: 6px 0 !important; border-color: #1e293b !important; }
 
-    html, body, [class*="css"] {
-        font-family: 'Outfit', sans-serif !important;
+    /* === SIDEBAR BUTONLARI === */
+    .stSidebar .stButton button {
+        background: transparent !important; border: 1px solid transparent !important;
+        color: #c9d1d9 !important; font-size: 13px !important; font-weight: 400 !important;
+        text-align: left !important; padding: 6px 12px !important; border-radius: 6px !important;
+        transition: all 0.15s ease !important;
     }
-
-    /* === GENEL TEMA VE ARKA PLAN === */
-    .stApp {
-        background: radial-gradient(circle at top left, #1a1f35 0%, #0d1117 100%) !important;
-        color: #e2e8f0 !important;
-    }
-    
-    .main > div:first-child { padding-top: 0rem !important; }
-    .block-container { padding-top: 0rem !important; padding-bottom: 0rem !important; max-width: 100% !important; }
-    header[data-testid="stHeader"] { background: transparent !important; display: none !important; }
-
-    /* === SIDEBAR (YAN MENÜ) === */
-    [data-testid="stSidebar"],
-    [data-testid="stSidebar"] > div:first-child,
-    [data-testid="stSidebar"] .st-emotion-cache-1wmy9hl {
-        background-color: #1e1e24 !important;
-        background: #1e1e24 !important;
-        border-right: none !important;
-        padding-top: 0px !important;
-    }
-    [data-testid="stSidebar"] hr {
-        display: none !important;
-    }
-    /* Sidebar tüm blok elemanları arasındaki boşluğu sıkıştır */
-    [data-testid="stSidebar"] .stElementContainer,
-    [data-testid="stSidebar"] .stMarkdown,
-    [data-testid="stSidebar"] .stRadio,
-    [data-testid="stSidebar"] .stSelectbox,
-    [data-testid="stSidebar"] .stButton {
-        margin-top: 0px !important;
-        margin-bottom: 0px !important;
-    }
-    [data-testid="stSidebar"] [data-testid="stVerticalBlockBorderWrapper"] {
-        gap: 0px !important;
-    }
-    [data-testid="stSidebar"] .block-container,
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
-        gap: 0px !important;
-        row-gap: 0px !important;
-    }
-    
-    /* Yan Menü Butonları */
-    [data-testid="stSidebar"] .stButton button {
-        background-color: rgba(255,255,255,0.06) !important; 
-        background: rgba(255,255,255,0.06) !important; 
-        border: 1px solid rgba(255,255,255,0.12) !important;
-        color: #e2e8f0 !important; 
-        font-size: 14px !important; 
-        font-weight: 600 !important;
-        text-align: left !important; 
-        padding: 6px 12px !important; 
-        border-radius: 6px !important;
-        transition: all 0.2s ease !important;
-        width: 100% !important;
-        box-shadow: none !important;
-        margin-bottom: 0px !important;
-    }
-    [data-testid="stSidebar"] .stButton button:hover {
-        background-color: rgba(255,255,255,0.1) !important;
-        color: #ffffff !important;
-        transform: none !important;
+    .stSidebar .stButton button:hover {
+        background: rgba(56, 189, 248, 0.08) !important;
+        border-color: rgba(56, 189, 248, 0.2) !important; color: #38bdf8 !important;
     }
 
-    /* Selectbox */
-    [data-testid="stSidebar"] div[data-baseweb="select"] > div {
-        background-color: rgba(255,255,255,0.06) !important; 
-        border: 1px solid rgba(255,255,255,0.15) !important;
-        border-radius: 6px !important; color: #e2e8f0 !important;
-        padding: 2px !important;
-    }
-
-    /* Radyo Butonları */
-    [data-testid="stSidebar"] div[role="radiogroup"] {
-        gap: 0px !important;
-    }
-    [data-testid="stSidebar"] div[role="radiogroup"] label {
-        background-color: transparent !important;
-        background: transparent !important;
-        font-size: 14px !important; padding: 6px 12px !important; color: #b0bec5 !important;
-        border-radius: 6px !important; transition: all 0.2s ease !important;
-        margin-bottom: 0px !important;
-        border: none !important;
-        display: flex !important; align-items: center !important;
-    }
-    [data-testid="stSidebar"] div[role="radiogroup"] label:hover { 
-        background-color: rgba(255,255,255,0.05) !important; 
-        color: #ffffff !important;
-    }
-    [data-testid="stSidebar"] div[role="radiogroup"] label[data-checked="true"] { 
-        background-color: rgba(255,255,255,0.08) !important; 
-        color: #ffffff !important; font-weight: 600 !important; 
-        border-left: 3px solid #ff5722 !important;
-        border-radius: 0 6px 6px 0 !important;
-    }
-
-
-    /* === METRİK KARTLARI (GLASSMORPHISM) === */
-    .stMetric {
-        background: rgba(30, 41, 59, 0.4) !important; 
-        backdrop-filter: blur(10px) !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        border-radius: 16px !important; 
-        padding: 16px 20px !important;
-        transition: transform 0.3s ease, box-shadow 0.3s ease !important;
-    }
-    .stMetric:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
-        border-color: rgba(56, 189, 248, 0.3) !important;
-    }
-    [data-testid="metric-container"] label {
-        font-size: 12px !important; color: #94a3b8 !important; font-weight: 500 !important; letter-spacing: 0.5px;
-    }
-    [data-testid="metric-container"] [data-testid="metric-value"] {
-        font-size: 24px !important; font-weight: 700 !important; color: #f8fafc !important;
-    }
-
-    /* === EXPANDER VE TABS === */
-    [data-testid="stExpander"], [data-testid="stExpander"] details, [data-testid="stExpander"] summary {
-        background-color: transparent !important;
-        background: transparent !important;
-        border: none !important;
-        border-radius: 0px !important;
-        box-shadow: none !important;
-    }
-    [data-testid="stExpander"]:hover, [data-testid="stExpander"] details:hover {
-        background-color: transparent !important;
-        border-color: transparent !important;
-    }
+    /* === EXPANDER BAŞLIKLARI === */
     .streamlit-expanderHeader {
-        font-size: 11px !important; font-weight: 600 !important; color: #6b7280 !important;
-        padding: 4px 8px !important; border-radius: 0px !important;
-        text-transform: uppercase !important; letter-spacing: 1px !important;
+        font-size: 11px !important; font-weight: 700 !important; color: #94a3b8 !important;
+        text-transform: uppercase !important; letter-spacing: 0.8px !important;
+        padding: 8px 4px !important; border-radius: 4px !important;
     }
-    .streamlit-expanderHeader:hover {
-        color: #9ca3af !important;
-    }
-    [data-testid="stExpander"] > details > div { padding-top: 0px !important; padding-left: 0px !important; border: none !important; }
+    .streamlit-expanderHeader:hover { color: #e2e8f0 !important; }
+    div[data-testid="stExpander"] { border: none !important; }
+    div[data-testid="stExpander"] > details { border-left: 2px solid #1e293b !important; padding-left: 6px !important; }
 
-    /* === BUTONLAR (ANA SAYFA) === */
-    .stButton>button {
-        border-radius: 8px !important;
-        font-weight: 600 !important;
-        transition: all 0.2s ease !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    /* === RADYO BUTONLAR === */
+    div[role="radiogroup"] label {
+        font-size: 13px !important; padding: 3px 8px !important; color: #c9d1d9 !important;
+        border-radius: 4px !important; transition: background 0.12s ease !important;
     }
-    .stButton>button:hover {
-        background: linear-gradient(90deg, #38bdf8, #818cf8) !important;
-        color: white !important;
-        border: none !important;
-        transform: scale(1.02);
-        box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3) !important;
+    div[role="radiogroup"] label:hover { background: rgba(56, 189, 248, 0.06) !important; }
+    div[role="radiogroup"] label[data-checked="true"] { color: #38bdf8 !important; font-weight: 600 !important; }
+
+    /* === SELECTBOX === */
+    div[data-baseweb="select"] > div {
+        background-color: #1e293b !important; border: 1px solid #334155 !important;
+        border-radius: 6px !important; color: #e2e8f0 !important;
     }
 
-    /* === İLERLEME ÇUBUĞU (PROGRESS BAR) === */
-    div.stProgress > div > div > div {
-        background: linear-gradient(90deg, #10b981, #3b82f6) !important; 
-        border-radius: 6px !important;
+    /* === MARQUEE BAR === */
+    .marquee-bar { background: linear-gradient(90deg, #0F172A, #1e293b) !important; }
+
+    /* === GENEL TEMA === */
+    .stApp { background-color: #0b1120 !important; }
+    h1, h2, h3, h4, h5, h6 { color: #f1f5f9 !important; font-weight: 600 !important; }
+    .stMarkdown p { color: #c9d1d9 !important; }
+
+    /* === METRIC CARDS === */
+    .stMetric {
+        background: #1e293b !important; border: 1px solid #334155 !important;
+        border-radius: 10px !important; padding: 10px 14px !important;
     }
-    div[data-testid="stProgress"] {
-        background-color: rgba(255, 255, 255, 0.05) !important; 
-        height: 8px !important; 
-        border-radius: 6px !important; 
+    [data-testid="metric-container"] label { font-size: 11px !important; color: #64748b !important; font-weight: 500 !important; }
+    [data-testid="metric-container"] [data-testid="metric-value"] {
+        font-size: 20px !important; font-weight: 700 !important; color: #f1f5f9 !important;
     }
 
-    /* === CUSTOM SCROLLBAR === */
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+    /* === PROGRESS BARLAR === */
+    div.stProgress > div > div > div { background: linear-gradient(90deg, #38bdf8, #818cf8) !important; border-radius: 4px !important; }
+    div[data-testid="stProgress"] { background-color: #1e293b !important; height: 6px !important; border-radius: 4px !important; }
+
+    /* === DATAFRAME / TABLO === */
+    .stDataFrame { font-size: 12px !important; }
+    .stDataFrame table { border-collapse: collapse !important; }
+
+    /* === SCROLLBAR === */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0b1120; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+    /* === AJAN DURUM RENKLERİ === */
+    .agent-active { color: #38bdf8 !important; }
+    .agent-busy { color: #fbbf24 !important; }
+    .agent-idle { color: #64748b !important; }
+    .agent-error { color: #ef4444 !important; }
+    .agent-done { color: #4ade80 !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -322,6 +226,95 @@ def get_trading_signals(symbols):
     except Exception as e:
         st.error(f"Veri çekme hatası: {e}")
     return pd.DataFrame(signals)
+
+# --- 1. PAGE CONFIG & STYLING ---
+st.set_page_config(page_title="Global Makro & BIST Terminali", layout="wide", initial_sidebar_state="expanded")
+
+# Custom Dark Theme Styling (Premium Look)
+st.markdown("""
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+    
+    html, body, [class*="css"] {
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .main { 
+        background-color: #0d1117; 
+        color: #c9d1d9; 
+    }
+    
+    .stMetric { 
+        background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+        border-radius: 12px; 
+        padding: 20px; 
+        border: 1px solid #30363d;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    }
+    
+    div[data-testid="stExpander"] {
+        border-radius: 12px;
+        border: 1px solid #30363d;
+    }
+    
+    .stButton>button {
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .stButton>button:hover {
+        border-color: #58a6ff;
+        color: #58a6ff;
+    }
+    
+    h1, h2, h3 { 
+        font-weight: 600;
+        letter-spacing: -0.5px;
+    }
+    
+    /* Glassmorphism containers */
+    .glass-card {
+        background: rgba(22, 27, 34, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    /* Sidebar Menü butonları */
+    div[data-testid="stSidebar"] .stButton button {
+        text-align: left;
+        font-size: 13px;
+        padding: 6px 12px;
+        margin: 1px 0;
+        border-radius: 6px;
+        background: transparent;
+        border: none;
+        color: #c9d1d9;
+        transition: all 0.15s ease;
+    }
+    div[data-testid="stSidebar"] .stButton button:hover {
+        background: rgba(88, 166, 255, 0.1);
+        color: #58a6ff;
+    }
+    div[data-testid="stSidebar"] .stExpander {
+        border: 1px solid #30363d;
+        border-radius: 8px;
+        margin-bottom: 6px;
+        background: rgba(22, 27, 34, 0.4);
+    }
+    div[data-testid="stSidebar"] .stExpander details summary {
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        padding: 4px 8px;
+    }
+    div[data-testid="stSidebar"] .stExpander details summary p {
+        font-size: 12px;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 # --- CONSTANTS & DICTIONARIES ---
 COMMON_SYMBOLS = {
@@ -738,11 +731,11 @@ def render_ai_prediction_page(symbol, df):
     # Üst: Sinyal Kartı
     sig_color = "#00e676" if "YÜKSEK" in report["Sinyal"] else "#ffeb3b" if "ORTA" in report["Sinyal"] else "#ff5252"
     st.markdown(f"""
-    <div style="background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); border-left: 4px solid {sig_color};
-                border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); transition: transform 0.3s ease;">
-        <div style="font-size: 36px; font-weight: 700; color: {sig_color}; letter-spacing: -0.5px;">{report['Sinyal']}</div>
-        <div style="font-size: 22px; margin-top: 8px; font-weight: 500; color: #f8fafc;">{engine.direction} <span style="opacity:0.5">|</span> Skor: %{engine.weighted_score}</div>
-        <div style="font-size: 14px; margin-top: 12px; color: #94a3b8; font-weight: 400;">{engine.risk_warning}</div>
+    <div style="background: linear-gradient(135deg, #161b22, #0d1117); border: 2px solid {sig_color};
+                border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 20px;">
+        <div style="font-size: 36px; font-weight: 700; color: {sig_color};">{report['Sinyal']}</div>
+        <div style="font-size: 24px; margin-top: 8px;">{engine.direction} | Skor: %{engine.weighted_score}</div>
+        <div style="font-size: 14px; margin-top: 8px; color: #8b949e;">{engine.risk_warning}</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -2719,332 +2712,36 @@ class HedgeFundManagerAgent:
             time.sleep(0.1)
             self._synthesize()
             return self.consensus
-
-
-# ============================================================
-# 🎯 AJAN KONSENSÜS DASHBOARD (3 Sütunlu Konsensüs Paneli)
-# ============================================================
-
-class ConsensusDashboard:
-    """Teknik, Balina ve Duygu ajanlarının çıktılarını 3 sütunlu widget panelinde
-    konsolide eder. Vade bazlı ağırlıklandırma ile nihai sinyali üretir."""
-
-    def __init__(self, symbol, df, horizon="ORTA"):
-        self.symbol = symbol
-        self.df = df
-        self.horizon = horizon.upper() if isinstance(horizon, str) else "ORTA"
-        self.tech_agent = TechnicalAnalystAgent(symbol, df)
-        self.whale_agent = WhaleFlowAgent(symbol, df)
-        self.sent_agent = MacroSentimentAgent(symbol, df)
-        self.results = {}
-        self.consensus = {}
-        self.execution_time = 0.0
-
-    # ----------------------------------------------------------
-    # ASENKRON: 3 ajanı paralel çalıştır
-    # ----------------------------------------------------------
-    async def run_async(self):
-        """3 uzman ajanı asyncio.gather ile eşzamanlı çalıştırır."""
-        import time
-        basla = time.time()
-        try:
-            sonuclar = await asyncio.gather(
-                self.tech_agent.analyze_async(),
-                self.whale_agent.analyze_async(),
-                self.sent_agent.analyze_async(),
-            )
-            self.results = {
-                "technical": sonuclar[0],
-                "whale_flow": sonuclar[1],
-                "sentiment": sonuclar[2],
-            }
-        except:
-            self.results = {
-                "technical": {"technical_score": 50.0},
-                "whale_flow": {"whale_score": 50.0},
-                "sentiment": {"sentiment_score": 50.0},
-            }
-        self.execution_time = round(time.time() - basla, 2)
-        self._synthesize()
-        return self.consensus
-
-    # ----------------------------------------------------------
-    # VADE BAZLI AĞIRLIKLANDIRMA MOTORU
-    # ----------------------------------------------------------
-    def _synthesize(self):
-        """Vadeye göre dinamik ağırlıklarla 3 ajanın skorlarını birleştirir."""
-        try:
-            hw = get_weights_by_horizon(self.horizon)
-
-            t_skor = self.results.get("technical", {}).get("technical_score", 50)
-            w_skor = self.results.get("whale_flow", {}).get("whale_score", 50)
-            s_skor = self.results.get("sentiment", {}).get("sentiment_score", 50)
-
-            w_tech = hw.get("momentum", 0) + hw.get("technical", 0) + hw.get("volume_anomaly", 0) + hw.get("orderbook", 0)
-            w_fund = hw.get("fundamental", 0) + hw.get("flow", 0) + hw.get("monte_carlo", 0)
-            w_sent = hw.get("sentiment", 0) + hw.get("macro", 0)
-
-            toplam = w_tech + w_fund + w_sent
-            if toplam == 0:
-                w_tech, w_fund, w_sent = 0.4, 0.3, 0.3
-                toplam = 1.0
-
-            nihai_skor = (t_skor * w_tech + w_skor * w_fund + s_skor * w_sent) / toplam
-            nihai_skor = round(max(0, min(100, nihai_skor)), 1)
-
-            if nihai_skor >= 75:
-                sinyal = "🔥 GÜÇLÜ AL"
-                yon = "🟢 AL"
-            elif nihai_skor >= 60:
-                sinyal = "✅ AL"
-                yon = "🟢 AL"
-            elif nihai_skor >= 40:
-                sinyal = "⚠️ NÖTR (BEKLE)"
-                yon = "⚪ NÖTR"
-            elif nihai_skor >= 25:
-                sinyal = "❌ SAT"
-                yon = "🔴 SAT"
-            else:
-                sinyal = "🔴 GÜÇLÜ SAT"
-                yon = "🔴 SAT"
-
-            self.consensus = {
-                "final_score": nihai_skor,
-                "signal": sinyal,
-                "direction": yon,
-                "technical_score": round(t_skor, 1),
-                "whale_score": round(w_skor, 1),
-                "sentiment_score": round(s_skor, 1),
-                "weights": {
-                    "technical": round(w_tech / toplam, 3),
-                    "whale_flow": round(w_fund / toplam, 3),
-                    "sentiment": round(w_sent / toplam, 3),
-                },
-                "horizon": self.horizon,
-                "execution_time": self.execution_time,
-            }
-        except:
-            self.consensus = {
-                "final_score": 50.0, "signal": "⚠️ HATA", "direction": "⚪ NÖTR",
-                "technical_score": 50, "whale_score": 50, "sentiment_score": 50,
-            }
-
-    # ----------------------------------------------------------
-    # YARDIMCI: EMA 50/200 durum analizi
-    # ----------------------------------------------------------
-    @staticmethod
-    def _get_ema_durum(df):
-        """Fiyatın EMA 50 ve EMA 200'e göre konumunu döndürür."""
-        try:
-            if df.empty or 'Close' not in df.columns or len(df) < 200:
-                return "N/A", "N/A", "N/A"
-            close = df['Close'].squeeze().astype(float)
-            ema50 = ta.trend.ema_indicator(close, window=50).iloc[-1]
-            ema200 = ta.trend.ema_indicator(close, window=200).iloc[-1]
-            fiyat = close.iloc[-1]
-            if pd.isna(ema50) or pd.isna(ema200):
-                return "N/A", "N/A", "N/A"
-            durum50 = "🟢 Üstünde" if fiyat >= ema50 else "🔴 Altında"
-            durum200 = "🟢 Üstünde" if fiyat >= ema200 else "🔴 Altında"
-            trend = "📈 Yükseliş" if ema50 > ema200 else "📉 Düşüş"
-            return durum50, durum200, trend
-        except:
-            return "Hata", "Hata", "Hata"
-
-    # ----------------------------------------------------------
-    # YARDIMCI: Bollinger Band sıkışma analizi
-    # ----------------------------------------------------------
-    @staticmethod
-    def _get_bb_durum(df, pencere=20):
-        """Bollinger Band sıkışma (squeeze) durumunu hesaplar."""
-        try:
-            if df.empty or 'Close' not in df.columns or len(df) < pencere + 10:
-                return "N/A", 0
-            close = df['Close'].squeeze().astype(float)
-            bb = ta.volatility.BollingerBands(close, window=pencere)
-            bb_genislik = (bb.bollinger_hband().iloc[-1] - bb.bollinger_lband().iloc[-1]) / bb.bollinger_mavg().iloc[-1] * 100
-            son_20 = []
-            for i in range(min(20, len(close) - pencere)):
-                ust = bb.bollinger_hband().iloc[-(i + 1)]
-                alt = bb.bollinger_lband().iloc[-(i + 1)]
-                orta = bb.bollinger_mavg().iloc[-(i + 1)]
-                son_20.append((ust - alt) / orta * 100)
-            ortalama_genislik = sum(son_20) / len(son_20) if son_20 else bb_genislik
-            sikisma_orani = (1 - bb_genislik / ortalama_genislik) * 100 if ortalama_genislik > 0 else 0
-            durum = "🔴 Sıkışma" if bb_genislik < ortalama_genislik * 0.8 else "🟢 Normal"
-            return durum, round(sikisma_orani, 1)
-        except:
-            return "N/A", 0
-
-    # ----------------------------------------------------------
-    # Streamlit RENDER — 3 Sütunlu Widget + Konsensüs Paneli
-    # ----------------------------------------------------------
-    def render(self, container=None):
-        """Tam paneli Streamlit arayüzünde çizer."""
-        hedef = container if container else st
-
-        mem = st.session_state.get("agent_memory", {})
-        t_skor = mem.get("technical_score")
-        w_skor = mem.get("whale_score")
-        s_skor = mem.get("sentiment_score")
-
-        t_rep = self.results.get("technical", {})
-        w_rep = self.results.get("whale_flow", {})
-        s_rep = self.results.get("sentiment", {})
-
-        divs = t_rep.get("divergences", [])
-        if not divs and t_skor is not None:
-            try:
-                divs = detect_divergence(self.df)
-            except:
-                divs = []
-        ema50_durum, ema200_durum, trend = self._get_ema_durum(self.df)
-        bb_durum, bb_sikisma = self._get_bb_durum(self.df)
-
-        inst_stability = w_rep.get("institution_stability", 50)
-        inst_flow = w_rep.get("institution_flow", {})
-        ob_skor = w_rep.get("order_book_score", 50)
-
-        sosyal_skor = s_rep.get("social_sentiment_score", 50)
-        sosyal_alert = s_rep.get("social_alert", False)
-        tavily_count = s_rep.get("tavily_count", 0)
-        alt_sent = s_rep.get("alternative_sentiment", 50)
-
-        hedef.markdown("""<hr style='margin:4px 0;border-color:#1e293b;'>""", unsafe_allow_html=True)
-        sut1, sut2, sut3 = hedef.columns(3, gap="small")
-
-        # ——— SÜTUN 1: TEKNİK ———
-        with sut1:
-            t_renk = "#4ade80" if t_skor is not None and t_skor >= 60 else "#ef4444" if t_skor is not None and t_skor <= 30 else "#fbbf24"
-            t_gosterge = f"%{t_skor:.0f}" if isinstance(t_skor, (int, float)) else "%—"
-            icerik1 = f"""<div style="background:#0F172A; border:1px solid #1e293b; border-radius:12px; padding:12px; height:100%;">
-                <div style="font-size:12px; color:#94a3b8; font-weight:600; letter-spacing:0.5px;">🟢 TEKNİK MOMENTUM</div>
-                <div style="font-size:26px; font-weight:700; color:{t_renk}; margin:4px 0;">{t_gosterge}</div>
-                <div style="font-size:11px; color:#cbd5e1; line-height:1.8;">"""
-            if divs:
-                for d in divs[:2]:
-                    etiket = d[2] if len(d) > 2 else d[0]
-                    icerik1 += f"▸ 🔍 Uyumsuzluk: {etiket[:60]}<br>"
-            else:
-                icerik1 += "▸ ✅ RSI uyumsuzluk yok<br>"
-            icerik1 += f"""▸ 📊 EMA 50: {ema50_durum}<br>▸ 📊 EMA 200: {ema200_durum}<br>▸ 📈 Trend: {trend}<br>▸ 📉 BB: {bb_durum} (%{bb_sikisma})
-                </div></div>"""
-            st.markdown(icerik1, unsafe_allow_html=True)
-
-        # ——— SÜTUN 2: BALİNA ———
-        with sut2:
-            w_renk = "#38bdf8" if w_skor is not None and w_skor >= 60 else "#ef4444" if w_skor is not None and w_skor <= 30 else "#fbbf24"
-            w_gosterge = f"%{w_skor:.0f}" if isinstance(w_skor, (int, float)) else "%—"
-            icerik2 = f"""<div style="background:#0F172A; border:1px solid #1e293b; border-radius:12px; padding:12px; height:100%;">
-                <div style="font-size:12px; color:#94a3b8; font-weight:600; letter-spacing:0.5px;">🔵 BALİNA & TAKAS</div>
-                <div style="font-size:26px; font-weight:700; color:{w_renk}; margin:4px 0;">{w_gosterge}</div>
-                <div style="font-size:11px; color:#cbd5e1; line-height:1.8;">"""
-            if isinstance(inst_stability, (int, float)):
-                kr = "#4ade80" if inst_stability >= 60 else "#ef4444"
-                icerik2 += f"▸ 🏦 Kurum Kararlılığı: <span style='color:{kr};'>%{inst_stability:.0f}</span><br>"
-            else:
-                icerik2 += "▸ 🏦 Kurum Kararlılığı: —<br>"
-            ob_renk = "#4ade80" if ob_skor >= 60 else "#ef4444" if ob_skor <= 40 else "#fbbf24"
-            ob_yon = "Alış Baskın" if ob_skor >= 55 else "Satış Baskın" if ob_skor <= 45 else "Dengeli"
-            icerik2 += f"▸ 📋 Emir Defteri: <span style='color:{ob_renk};'>{ob_yon} (%{ob_skor:.0f})</span><br>"
-            if inst_flow and isinstance(inst_flow, dict):
-                net_flow = inst_flow.get("net_flow", 0)
-                frk = "#4ade80" if net_flow > 0 else "#ef4444"
-                icerik2 += f"▸ 💰 Net Fon: <span style='color:{frk};'>{net_flow:+.1f}M</span><br>"
-            else:
-                icerik2 += "▸ 💰 Net Fon: —<br>"
-            icerik2 += "</div></div>"
-            st.markdown(icerik2, unsafe_allow_html=True)
-
-        # ——— SÜTUN 3: DUYGU ———
-        with sut3:
-            s_renk = "#fbbf24" if s_skor is not None and s_skor >= 60 else "#ef4444" if s_skor is not None and s_skor <= 30 else "#94a3b8"
-            s_gosterge = f"%{s_skor:.0f}" if isinstance(s_skor, (int, float)) else "%—"
-            icerik3 = f"""<div style="background:#0F172A; border:1px solid #1e293b; border-radius:12px; padding:12px; height:100%;">
-                <div style="font-size:12px; color:#94a3b8; font-weight:600; letter-spacing:0.5px;">🟡 MAKRO DUYGU</div>
-                <div style="font-size:26px; font-weight:700; color:{s_renk}; margin:4px 0;">{s_gosterge}</div>
-                <div style="font-size:11px; color:#cbd5e1; line-height:1.8;">"""
-            if isinstance(sosyal_skor, (int, float)):
-                sr = "#4ade80" if sosyal_skor >= 60 else "#ef4444" if sosyal_skor <= 40 else "#fbbf24"
-                icerik3 += f"▸ 📰 Haber Duyarlılığı: <span style='color:{sr};'>%{sosyal_skor:.0f}</span><br>"
-            else:
-                icerik3 += "▸ 📰 Haber Duyarlılığı: —<br>"
-            ano_durum = "🚨 Anomali (+) " if sosyal_alert else "✅ Normal"
-            ano_renk = "#f97316" if sosyal_alert else "#4ade80"
-            icerik3 += f"▸ 🌐 Sosyal Medya: <span style='color:{ano_renk};'>{ano_durum}</span><br>"
-            if tavily_count > 0:
-                icerik3 += f"▸ 🔎 Tavily Haber: {tavily_count} kaynak<br>"
-            if isinstance(alt_sent, (int, float)):
-                icerik3 += f"▸ 📊 Alternatif Duygu: %{alt_sent:.0f}<br>"
-            icerik3 += "</div></div>"
-            st.markdown(icerik3, unsafe_allow_html=True)
-
-        # ——— KONSENSÜS PANELİ (3 sütunun altında) ———
-        hedef.markdown("""<hr style='margin:6px 0;border-color:#1e293b;'>""", unsafe_allow_html=True)
-        c = self.consensus if self.consensus else {}
-        nihai_skor = c.get("final_score") or mem.get("final_score") or 50
-        sinyal = c.get("signal") or mem.get("signal") or "⚠️ BEKLE"
-        yon = c.get("direction") or "⚪ NÖTR"
-        horizon = c.get("horizon") or st.session_state.get("vade", "ORTA")
-
-        if nihai_skor >= 75:
-            panel_renk = "#4ade80"
-            arkaplan = "rgba(74,222,128,0.08)"
-        elif nihai_skor >= 60:
-            panel_renk = "#22c55e"
-            arkaplan = "rgba(34,197,94,0.06)"
-        elif nihai_skor >= 40:
-            panel_renk = "#fbbf24"
-            arkaplan = "rgba(251,191,36,0.06)"
-        elif nihai_skor >= 25:
-            panel_renk = "#ef4444"
-            arkaplan = "rgba(239,68,68,0.08)"
-        else:
-            panel_renk = "#dc2626"
-            arkaplan = "rgba(220,38,38,0.1)"
-
-        hedef.markdown(f"""
-        <div style="background:{arkaplan}; border:1px solid {panel_renk}40; border-left:4px solid {panel_renk};
-                    border-radius:12px; padding:14px 20px; margin:6px 0; text-align:center;">
-            <div style="display:flex; justify-content:center; align-items:center; gap:24px; flex-wrap:wrap;">
-                <div>
-                    <div style="font-size:11px; color:#94a3b8; font-weight:500; letter-spacing:0.5px;">ORTAK KONSENSÜS SKORU</div>
-                    <div style="font-size:32px; font-weight:700; color:{panel_renk};">%{nihai_skor:.0f}</div>
-                </div>
-                <div style="border-left:1px solid #1e293b; height:40px;"></div>
-                <div>
-                    <div style="font-size:11px; color:#94a3b8; font-weight:500; letter-spacing:0.5px;">📢 SİSTEM SİNYALİ</div>
-                    <div style="font-size:22px; font-weight:700; color:{panel_renk};">{sinyal}</div>
-                </div>
-                <div style="border-left:1px solid #1e293b; height:40px;"></div>
-                <div>
-                    <div style="font-size:11px; color:#94a3b8; font-weight:500; letter-spacing:0.5px;">📅 VADE</div>
-                    <div style="font-size:18px; font-weight:600; color:#e2e8f0;">{horizon}</div>
-                </div>
-                <div style="border-left:1px solid #1e293b; height:40px;"></div>
-                <div>
-                    <div style="font-size:11px; color:#94a3b8; font-weight:500; letter-spacing:0.5px;">⏱ SÜRE</div>
-                    <div style="font-size:18px; font-weight:600; color:#e2e8f0;">{c.get('execution_time', mem.get('execution_time', '—'))}s</div>
-                </div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
 with st.sidebar:
-    # BAŞLIK
-    st.markdown("""
-    <div style="padding: 6px 8px 4px 8px; margin: 0;">
-        <div style="font-size: 20px; font-weight: 700; color: #e2e8f0; letter-spacing: -0.5px;">
-            📊 Borsa Analiz
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.title("🛡️ Strateji Terminali")
 
-    # ANA SAYFA
-    ana_sec = st.button("🏠 Ana Sayfa", use_container_width=True, type="secondary")
-    if ana_sec:
-        st.session_state.menu_secim = "🏠 Ana Sayfa"
+    # VADE SEÇİCİ
+    st.subheader("📅 Yatırım Vadesi")
+    vade_options = ["KISA", "ORTA", "UZUN"]
+    vade_labels = {"KISA": "🔴 Kısa Vade (Günlük)", "ORTA": "🟡 Orta Vade (Haftalık)", "UZUN": "🟢 Uzun Vade (Aylık)"}
+    current_vade = st.session_state.get("vade", "ORTA")
+    vade_idx = vade_options.index(current_vade) if current_vade in vade_options else 1
+    selected_vade = st.radio(
+        "Vade Seçimi",
+        options=vade_options,
+        format_func=lambda x: vade_labels.get(x, x),
+        index=vade_idx,
+        key="vade_radio",
+        label_visibility="collapsed",
+    )
+    if selected_vade != current_vade:
+        st.session_state.vade = selected_vade
         st.rerun()
+    st.divider()
+
+    # KATMAN 1: GİRİŞ
+    with st.expander("🏠 KATMAN 1 — GİRİŞ", expanded=True):
+        ana_sec = st.button("🏠 Ana Sayfa", use_container_width=True, type="secondary")
+        if ana_sec:
+            st.session_state.menu_secim = "🏠 Ana Sayfa"
+            st.rerun()
+
+    st.divider()
 
     # Hisse seçici
     st.selectbox(
@@ -3055,58 +2752,60 @@ with st.sidebar:
         label_visibility="collapsed",
     )
 
-    st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
-    st.markdown("<div class='streamlit-expanderHeader' style='margin-top: 4px;'>YAPAY ZEKA MERKEZİ</div>", unsafe_allow_html=True)
-    ai_choice = st.radio("AI", [
-        "🤖 AI Karar Motoru",
-        "🧠 Gelişmiş AI (Kalibrasyon)",
-        "🔮 AI Fiyat Tahmini",
-    ], key="ai_menu", label_visibility="collapsed", index=0)
-    if ai_choice != st.session_state.get("last_ai_menu"):
-        st.session_state.menu_secim = ai_choice
-        st.session_state.last_ai_menu = ai_choice
-        st.rerun()
+    st.divider()
+
+    # KATMAN 2: YAPAY ZEKA MERKEZİ
+    with st.expander("🧠 KATMAN 2 — YAPAY ZEKA MERKEZİ", expanded=True):
+        ai_choice = st.radio("AI", [
+            "🤖 AI Karar Motoru",
+            "🧠 Gelişmiş AI (Kalibrasyon)",
+            "🔮 AI Fiyat Tahmini",
+        ], key="ai_menu", label_visibility="collapsed", index=0)
+        if ai_choice != st.session_state.get("last_ai_menu"):
+            st.session_state.menu_secim = ai_choice
+            st.session_state.last_ai_menu = ai_choice
+            st.rerun()
 
     # KATMAN 3: TARAMA & PİYASA AKIŞI
-    st.markdown("<div class='streamlit-expanderHeader' style='margin-top: 10px;'>TARAMA & PİYASA AKIŞI</div>", unsafe_allow_html=True)
-    radar_choice = st.radio("Radar", [
-        "📈 Piyasa Radarı (Sinyal Taraması)",
-        "🗺️ Market Heatmap (Isı Haritası)",
-        "🌍 Küresel Radar (Makro)",
-        "🚨 Emir Defteri Dengesizliği",
-    ], key="radar_menu", label_visibility="collapsed")
-    if radar_choice != st.session_state.get("last_radar_menu"):
-        st.session_state.menu_secim = radar_choice
-        st.session_state.last_radar_menu = radar_choice
-        st.rerun()
+    with st.expander("🔍 KATMAN 3 — TARAMA & PİYASA AKIŞI", expanded=False):
+        radar_choice = st.radio("Radar", [
+            "📈 Piyasa Radarı (Sinyal Taraması)",
+            "🗺️ Market Heatmap (Isı Haritası)",
+            "🌍 Küresel Radar (Makro)",
+            "🚨 Emir Defteri Dengesizliği",
+        ], key="radar_menu", label_visibility="collapsed")
+        if radar_choice != st.session_state.get("last_radar_menu"):
+            st.session_state.menu_secim = radar_choice
+            st.session_state.last_radar_menu = radar_choice
+            st.rerun()
 
     # KATMAN 4: DERİN ANALİZ LABORATUVARI
-    st.markdown("<div class='streamlit-expanderHeader' style='margin-top: 10px;'>DERİN ANALİZ LABORATUVARI</div>", unsafe_allow_html=True)
-    analiz_choice = st.radio("Analiz", [
-        "📊 Teknik Analiz (Uyumsuzluklar)",
-        "📑 Temel Analiz & Sağlık",
-        "🎭 Sektörel Analiz (Kıyas)",
-        "🏦 Fon & Takas Analizi",
-        "📰 Haber & KAP (Duygu Analizi)",
-        "📉 Sosyal Medya Radarı",
-    ], key="analiz_menu", label_visibility="collapsed")
-    if analiz_choice != st.session_state.get("last_analiz_menu"):
-        st.session_state.menu_secim = analiz_choice
-        st.session_state.last_analiz_menu = analiz_choice
-        st.rerun()
+    with st.expander("📊 KATMAN 4 — DERİN ANALİZ LABORATUVARI", expanded=False):
+        analiz_choice = st.radio("Analiz", [
+            "📊 Teknik Analiz (Uyumsuzluklar)",
+            "📑 Temel Analiz & Sağlık",
+            "🎭 Sektörel Analiz (Kıyas)",
+            "🏦 Fon & Takas Analizi",
+            "📰 Haber & KAP (Duygu Analizi)",
+            "📉 Sosyal Medya Radarı",
+        ], key="analiz_menu", label_visibility="collapsed")
+        if analiz_choice != st.session_state.get("last_analiz_menu"):
+            st.session_state.menu_secim = analiz_choice
+            st.session_state.last_analiz_menu = analiz_choice
+            st.rerun()
 
     # KATMAN 5: RİSK & STRATEJİ DOĞRULAMA
-    st.markdown("<div class='streamlit-expanderHeader' style='margin-top: 10px;'>RİSK & STRATEJİ DOĞRULAMA</div>", unsafe_allow_html=True)
-    risk_choice = st.radio("Risk", [
-        "🧪 Strateji Testi (Backtest)",
-        "🎲 Monte Carlo Simülasyonu",
-        "🎒 Portföy Analizi & Drawdown",
-        "📅 Ekonomik Takvim Filtresi",
-    ], key="risk_menu", label_visibility="collapsed")
-    if risk_choice != st.session_state.get("last_risk_menu"):
-        st.session_state.menu_secim = risk_choice
-        st.session_state.last_risk_menu = risk_choice
-        st.rerun()
+    with st.expander("🧪 KATMAN 5 — RİSK & STRATEJİ DOĞRULAMA", expanded=False):
+        risk_choice = st.radio("Risk", [
+            "🧪 Strateji Testi (Backtest)",
+            "🎲 Monte Carlo Simülasyonu",
+            "🎒 Portföy Analizi & Drawdown",
+            "📅 Ekonomik Takvim Filtresi",
+        ], key="risk_menu", label_visibility="collapsed")
+        if risk_choice != st.session_state.get("last_risk_menu"):
+            st.session_state.menu_secim = risk_choice
+            st.session_state.last_risk_menu = risk_choice
+            st.rerun()
     
     st.divider()
 
@@ -3347,58 +3046,23 @@ if secim == "🏠 Ana Sayfa":
 
     st.divider()
 
-    # ——— AJAN KONSENSÜS DASHBOARD (3 sütunlu widget + konsensüs paneli) ———
-    dashboard = ConsensusDashboard(search_query, data, st.session_state.get("vade", "ORTA"))
-    dashboard.render()
-
-    # Asenkron paralel çalıştırma butonu
-    col_btn, col_info = st.columns([3, 1])
-    with col_btn:
-        if st.button("🚀 Ajanları Paralel Çalıştır (asyncio.gather)", key="ana_sayfa_async", use_container_width=True):
-            with st.spinner("🧠 3 ajan paralel taranıyor..."):
-                try:
-                    loop = asyncio.new_event_loop()
-                    asyncio.set_event_loop(loop)
-                    sonuc = loop.run_until_complete(dashboard.run_async())
-                    loop.close()
-                    st.session_state.agent_memory = {
-                        "final_score": sonuc.get("final_score"),
-                        "signal": sonuc.get("signal"),
-                        "technical_score": sonuc.get("technical_score"),
-                        "whale_score": sonuc.get("whale_score"),
-                        "sentiment_score": sonuc.get("sentiment_score"),
-                        "horizon": sonuc.get("horizon"),
-                        "execution_time": sonuc.get("execution_time"),
-                    }
-                    st.rerun()
-                except:
-                    st.warning("Paralel çalıştırma başarısız, sıralı moda geçiliyor...")
-                    mgr = HedgeFundManagerAgent(search_query, data, st.session_state.get("vade", "ORTA"))
-                    for _, _, _ in mgr.run_with_status_stream():
-                        pass
-                    c = mgr.consensus
-                    st.session_state.agent_memory = {
-                        "final_score": c.get("final_score"),
-                        "signal": c.get("signal"),
-                        "technical_score": c.get("technical_score"),
-                        "whale_score": c.get("whale_score"),
-                        "sentiment_score": c.get("sentiment_score"),
-                        "horizon": c.get("horizon"),
-                        "execution_time": c.get("execution_time"),
-                    }
-                    st.rerun()
-    with col_info:
-        mem_check = st.session_state.get("agent_memory", {})
-        if mem_check.get("execution_time"):
-            st.caption(f"⏱ Son çalışma: {mem_check['execution_time']}s | Vade: {mem_check.get('horizon', '—')}")
-
-    # Chain-of-Thought geçmişi
-    cot_log = st.session_state.get("cot_log", [])
-    if cot_log:
-        with st.expander("🧠 Ajan Düşünce Zinciri (Chain-of-Thought)", expanded=False):
-            for entry in cot_log[-20:]:
-                emoji_map = {"technical": "📡", "whale": "🐋", "sentiment": "🌍", "system": "⚙️"}
-                st.write(f"{emoji_map.get(entry['agent'], '▸')} {entry['msg']}")
+    # ——— MULTI-AGENT AI CONSENSUS BOX (Session State hafıza ile) ———
+    mem = st.session_state.get("agent_memory", {})
+    if mem and mem.get("final_score") is not None:
+        c1, c2, c3, c4, c5 = st.columns(5)
+        c1.markdown(f"**🧠 Skor**<br><span style='font-size:22px;font-weight:700;color:#58a6ff;'>%{mem.get('final_score', 0)}</span>", unsafe_allow_html=True)
+        c2.markdown(f"**📡 Sinyal**<br><span style='font-size:16px;font-weight:600;'>{mem.get('signal', '')}</span>", unsafe_allow_html=True)
+        c3.markdown(f"**📊 Teknik**<br><span style='font-size:16px;color:#ffeb3b;'>{mem.get('technical_score', 0)}</span>", unsafe_allow_html=True)
+        c4.markdown(f"**🐋 Balina**<br><span style='font-size:16px;color:#00e5ff;'>{mem.get('whale_score', 0)}</span>", unsafe_allow_html=True)
+        c5.markdown(f"**🌍 Duygu**<br><span style='font-size:16px;color:#ce93d8;'>{mem.get('sentiment_score', 0)}</span>", unsafe_allow_html=True)
+        cot_log = st.session_state.get("cot_log", [])
+        if cot_log:
+            with st.expander("🧠 Ajan Düşünce Zinciri (Chain-of-Thought)", expanded=False):
+                for entry in cot_log:
+                    emoji_map = {"technical": "📡", "whale": "🐋", "sentiment": "🌍", "system": "⚙️"}
+                    st.write(f"{emoji_map.get(entry['agent'], '▸')} {entry['msg']}")
+    else:
+        st.info("🤖 Henüz ajan analizi yapılmadı. Yukarıdaki '🧠 Ajanları Çalıştır' butonuna basın.")
 
     st.divider()
 
@@ -3448,50 +3112,6 @@ if secim == "🏠 Ana Sayfa":
     st.info("💡 Sol menüden diğer sayfalara geçiş yapabilirsiniz.")
 
 if secim == "🤖 AI Karar Motoru":
-    # ——— AJAN KONSENSÜS DASHBOARD (sayfanın üstünde) ———
-    ai_dash = ConsensusDashboard(search_query, data, st.session_state.get("vade", "ORTA"))
-    ai_dash.render()
-    col_run, col_info = st.columns([3, 1])
-    with col_run:
-        if st.button("🚀 Ajanları Paralel Çalıştır (asyncio.gather)", key="ai_karar_async", use_container_width=True):
-            with st.spinner("🧠 3 ajan paralel taranıyor..."):
-                try:
-                    loop = asyncio.new_event_loop()
-                    asyncio.set_event_loop(loop)
-                    sonuc = loop.run_until_complete(ai_dash.run_async())
-                    loop.close()
-                    st.session_state.agent_memory = {
-                        "final_score": sonuc.get("final_score"),
-                        "signal": sonuc.get("signal"),
-                        "technical_score": sonuc.get("technical_score"),
-                        "whale_score": sonuc.get("whale_score"),
-                        "sentiment_score": sonuc.get("sentiment_score"),
-                        "horizon": sonuc.get("horizon"),
-                        "execution_time": sonuc.get("execution_time"),
-                    }
-                    st.rerun()
-                except:
-                    st.warning("Paralel mod başarısız, sıralı mod kullanılıyor...")
-                    mgr = HedgeFundManagerAgent(search_query, data, st.session_state.get("vade", "ORTA"))
-                    for _, _, _ in mgr.run_with_status_stream():
-                        pass
-                    c = mgr.consensus
-                    st.session_state.agent_memory = {
-                        "final_score": c.get("final_score"),
-                        "signal": c.get("signal"),
-                        "technical_score": c.get("technical_score"),
-                        "whale_score": c.get("whale_score"),
-                        "sentiment_score": c.get("sentiment_score"),
-                        "horizon": c.get("horizon"),
-                        "execution_time": c.get("execution_time"),
-                    }
-                    st.rerun()
-    with col_info:
-        mem_ai = st.session_state.get("agent_memory", {})
-        if mem_ai.get("execution_time"):
-            st.caption(f"⏱ Son çalışma: {mem_ai['execution_time']}s | Vade: {mem_ai.get('horizon', '—')}")
-    st.divider()
-    # Mevcut AI Karar Motoru sayfası
     render_ai_prediction_page(search_query, data)
 
 if secim == "🧠 Gelişmiş AI (Kalibrasyon)":
