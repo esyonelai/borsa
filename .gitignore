@@ -6,3 +6,6 @@ journal.csv
 *.log
 venv/
 env/
+dist/
+build/
+*.spec

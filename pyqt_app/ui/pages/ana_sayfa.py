@@ -5,6 +5,7 @@ from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QFont
 import yfinance as yf
 import pandas as pd
+import ta as ta_lib
 
 from ..theme import COMMON_SYMBOLS
 
@@ -235,7 +236,7 @@ class AnaSayfaPage(QWidget):
         if df is not None and not df.empty:
             try:
                 close = df['Close'].squeeze().astype(float)
-                ema50 = ta.trend.ema_indicator(close, window=50).iloc[-1] if hasattr(__import__('ta'), 'trend') else None
+                ema50 = ta_lib.trend.ema_indicator(close, window=50).iloc[-1] if hasattr(ta_lib, 'trend') else None
             except:
                 pass
 
